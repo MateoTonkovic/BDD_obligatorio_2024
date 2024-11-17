@@ -75,13 +75,22 @@ FOREIGN KEY (id_equipamiento) REFERENCES equipamiento(id),
 UNIQUE (ci_alumno, id_clase)
 );
 
+
+tabla nueva creada:
+
+CREATE TABLE tokens (
+token VARCHAR(255) PRIMARY KEY,
+correo VARCHAR(255),
+FOREIGN KEY (correo) REFERENCES login(correo) ON DELETE CASCADE
+);
+
+
 Inserts de datos maestros:
 
 -- Inserción de datos maestros
 
 INSERT INTO login (correo, contraseña) VALUES
 ('admin@admin.com', 'admin'),
-('instructor@instructor.com', 'instructor');
 
 INSERT INTO actividades (descripcion, costo) VALUES
 ('Snowboard', 1500),
