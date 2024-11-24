@@ -15,11 +15,12 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], 
-    allow_credentials=True,                  
-    allow_methods=["*"],                     
-    allow_headers=["*"],  
+    allow_origins=["*"],  # You can specify a list of origins like ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Ensure the HTTP methods match your frontend's requests
+    allow_headers=["*"],  # Include all headers or list specific ones you need
 )
+
 
 class LoginRequest(BaseModel):
     correo: str
@@ -62,19 +63,20 @@ class InstructorUpdate(BaseModel):
 
 
 def get_db_connection():
-        try:
-            connection = mysql.connector.connect(
-                host="localhost",
-                database="bdd_obligatorio",
-                user="root",
-                password="root"
-            )
-            if connection.is_connected():
-                print("Conexión a la base de datos establecida")
-            return connection
-        except Error as e:
-            print("Error al conectar con la base de datos", e)
-            raise HTTPException(status_code=500, detail="Error en la conexión a la base de datos")
+    print("Conectando a la base de datos")
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            database="bdd_obligatorio",
+            user="root",
+            password="root"
+        )
+        if connection.is_connected():
+            print("Conexión a la base de datos establecida")
+        return connection
+    except Error as e:
+        print("Error al conectar con la base de datos", e)
+        raise HTTPException(status_code=500, detail="Error en la conexión a la base de datos")
 
 def close_db_connection(connection):
         if connection.is_connected():
@@ -84,31 +86,36 @@ def close_db_connection(connection):
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    # Allow login and OPTIONS requests without authentication
-    if request.url.path in ["/login/"] or request.method == "OPTIONS":
-        return await call_next(request)
+   # Allow login and OPTIONS requests without authentication
+   if request.url.path in ["/login"] or request.method == "OPTIONS":
+       
+       print("entro")
+       return await call_next(request)
 
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return JSONResponse(status_code=401, content={"detail": "Authorization header missing or invalid"})
+   auth_header = request.headers.get("Authorization")
+   if not auth_header or not auth_header.startswith("Bearer "):
+       return JSONResponse(status_code=401, content={"detail": "Authorization header missing or invalid"})
 
-    token = auth_header.split(" ")[1]  
+   token = auth_header.split(" ")[1]  
 
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT * FROM tokens WHERE token = %s", (token,))
-        valid_token = cursor.fetchone()
-        if not valid_token:
-            return JSONResponse(status_code=401, content={"detail": "Invalid or expired token"})
-    finally:
-        cursor.close()
-        close_db_connection(connection)
+   connection = get_db_connection()
+   cursor = connection.cursor(dictionary=True)
+   try:
+       cursor.execute("SELECT * FROM tokens WHERE token = %s", (token,))
+       valid_token = cursor.fetchone()
+       if not valid_token:
+           return JSONResponse(status_code=401, content={"detail": "Invalid or expired token"})
+   finally:
+       cursor.close()
+       close_db_connection(connection)
 
-    return await call_next(request)
+   return await call_next(request)
 
+@app.options("/{rest_of_path:path}")
+async def preflight_handler():
+    return JSONResponse(status_code=200)
 
-@app.get("/instructores/")
+@app.get("/instructores/")  
 def obtener_instructores():
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
@@ -493,7 +500,7 @@ def agregar_alumno_a_clase(id_clase: int, alumno_clase: AlumnoClase):
         cursor.close()
         close_db_connection(connection)
 
-@app.post("/login/")
+@app.post("/login")
 def login(request: LoginRequest):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -513,7 +520,7 @@ def login(request: LoginRequest):
         cursor.close()
         close_db_connection(connection)
         
-@app.post("/logout/")
+@app.post("/logout")
 def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
     connection = get_db_connection()
     cursor = connection.cursor()
