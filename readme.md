@@ -125,7 +125,6 @@ INSERT INTO clase (ci_instructor, id_actividad, id_turno, dictada) VALUES
 
 INSERT INTO alumno_clase (id_clase, ci_alumno, id_equipamiento) VALUES
 (1, 11111111, 1),
-(1, 11111111, 2),
 (2, 22222222, 3);
 
 recursos:
