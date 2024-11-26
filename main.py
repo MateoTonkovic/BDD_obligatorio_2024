@@ -66,10 +66,11 @@ def get_db_connection():
     print("Conectando a la base de datos")
     try:
         connection = mysql.connector.connect(
-            host="localhost",
+            host="mysql_container",  # Cambia esto por el nombre del contenedor o IP
             database="bdd_obligatorio",
             user="root",
-            password="root"
+            password="rootpassword",
+            port=3306  # Puerto al que está exponiendo MySQL
         )
         if connection.is_connected():
             print("Conexión a la base de datos establecida")

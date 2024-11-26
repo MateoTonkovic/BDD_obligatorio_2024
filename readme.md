@@ -9,7 +9,6 @@ ejecutar:
 uvicorn main:app --reload
 
 Scirpt de creación de tablas:
-
 CREATE DATABASE IF NOT EXISTS bdd_obligatorio;
 USE bdd_obligatorio;
 
@@ -90,7 +89,7 @@ Inserts de datos maestros:
 -- Inserción de datos maestros
 
 INSERT INTO login (correo, contraseña) VALUES
-('admin@admin.com', 'admin'),
+('admin@admin.com', 'admin');
 
 INSERT INTO actividades (descripcion, costo) VALUES
 ('Snowboard', 1500),
