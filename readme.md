@@ -1,14 +1,18 @@
-instalar:
+## Instalacion
 
 pip install fastapi uvicorn
 pip install mysql-connector-python
+
+python-dotenv lo quisimos instalar para manejar varialbes de entorno pero no lo logramos, por lo que no se usa en el proyecto.
+
 pip install python-dotenv
 
-ejecutar:
+## Ejcución
 
 uvicorn main:app --reload
 
-Scirpt de creación de tablas:
+## Scirpt de creación de tablas:
+
 CREATE DATABASE IF NOT EXISTS bdd_obligatorio;
 USE bdd_obligatorio;
 
@@ -84,9 +88,7 @@ FOREIGN KEY (correo) REFERENCES login(correo) ON DELETE CASCADE
 );
 
 
-Inserts de datos maestros:
-
--- Inserción de datos maestros
+## Inserts de datos maestros
 
 INSERT INTO login (correo, contraseña) VALUES
 ('admin@admin.com', 'admin');
@@ -125,9 +127,3 @@ INSERT INTO clase (ci_instructor, id_actividad, id_turno, dictada) VALUES
 INSERT INTO alumno_clase (id_clase, ci_alumno, id_equipamiento) VALUES
 (1, 11111111, 1),
 (2, 22222222, 3);
-
-recursos:
-
-https://www.youtube.com/watch?v=SORiTsvnU28
-
-https://dev.mysql.com/doc/connector-python/en/connector-python-examples.html
